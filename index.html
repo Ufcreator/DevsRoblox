@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROBLOX DEV TERMINAL MULTI-LANG</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+SC:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --accent: #00ffa3;
+            --danger: #ff0055;
+            --bg: #020202;
+            --panel: rgba(10, 10, 10, 0.9);
+            --border: rgba(0, 255, 163, 0.2);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: var(--bg); 
+            color: #fff; 
+            font-family: 'JetBrains Mono', 'Noto Sans SC', monospace; 
+            overflow-x: hidden;
+        }
+
+        canvas { position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.15; }
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; position: relative; }
+
+        /* Top Bar & Lang Switcher */
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .lang-select {
+            background: #000; color: var(--accent); border: 1px solid var(--accent);
+            padding: 5px; font-family: 'Orbitron'; font-size: 0.7rem; outline: none; cursor: pointer;
+        }
+
+        /* Modules */
+        .section-box {
+            background: var(--panel); border: 2px solid var(--border);
+            padding: 25px; margin-bottom: 30px; backdrop-filter: blur(10px);
+            position: relative; overflow: hidden;
+        }
+        .section-box::before { content: ""; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent); }
+        .section-box.danger::before { background: var(--danger); }
+
+        h2 { font-family: 'Orbitron'; font-size: 1.1rem; color: var(--accent); margin-bottom: 20px; text-transform: uppercase; }
+        h2.danger { color: var(--danger); }
+
+        .label { font-size: 0.65rem; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; display: block; opacity: 0.6; }
+
+        .field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+        @media (max-width: 600px) { .field-group { grid-template-columns: 1fr; } }
+
+        input, textarea, select {
+            width: 100%; background: rgba(0,0,0,0.6); border: 1px solid #222; padding: 12px;
+            color: #fff; font-family: inherit; outline: none; transition: 0.3s;
+        }
+        input:focus, textarea:focus { border-color: var(--accent); }
+
+        .btn {
+            background: var(--accent); color: #000; border: none; padding: 15px;
+            width: 100%; font-family: 'Orbitron'; font-weight: 700; cursor: pointer;
+            text-transform: uppercase; transition: 0.3s;
+            clip-path: polygon(0 0, 100% 0, 100% 75%, 95% 100%, 0 100%);
+        }
+        .btn.danger { background: var(--danger); color: #fff; }
+
+        .logs { background: #000; padding: 10px; font-size: 0.6rem; color: #444; border: 1px solid #111; height: 60px; overflow-y: auto; }
+    </style>
+</head>
+<body>
+
+    <canvas id="matrix"></canvas>
+
+    <div class="container">
+        <div class="top-bar">
+            <span id="sys_status">TERMINAL_OS_V4.0</span>
+            <div>
+                <select class="lang-select" onchange="changeLang(this.value)">
+                    <option value="ru">RU</option>
+                    <option value="en">EN</option>
+                    <option value="fr">FR</option>
+                    <option value="es">ES</option>
+                    <option value="it">IT</option>
+                    <option value="zh">ZH</option>
+                </select>
+                <span id="clock" style="margin-left: 10px;">00:00:00</span>
+            </div>
+        </div>
+
+        <section class="section-box">
+            <h2 id="title_seller">[01] Я ПРОДАЮ УСЛУГИ</h2>
+            <form id="formSeller">
+                <div class="field-group">
+                    <div>
+                        <span class="label" id="lbl_seller_contact">Ваш контакт</span>
+                        <input type="text" id="sellerContact" required>
+                    </div>
+                    <div>
+                        <span class="label" id="lbl_seller_role">Специализация</span>
+                        <select id="sellerRole">
+                            <option value="Scripter" id="opt_scripter">Скриптер</option>
+                            <option value="Builder" id="opt_builder">Билдер</option>
+                            <option value="UI" id="opt_ui">UI Дизайнер</option>
+                            <option value="Modeler" id="opt_modeler">Моделлер</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <span class="label" id="lbl_seller_exp">Опыт и навыки</span>
+                    <textarea id="sellerText" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn" id="btn_seller">Разместить резюме</button>
+            </form>
+        </section>
+
+        <section class="section-box">
+            <h2 id="title_order">[02] ЗАКАЗАТЬ УСЛУГУ</h2>
+            <form id="formOrder">
+                <div class="field-group">
+                    <div>
+                        <span class="label" id="lbl_order_budget">Бюджет (R$)</span>
+                        <input type="number" id="orderPrice" value="500">
+                    </div>
+                    <div>
+                        <span class="label" id="lbl_order_contact">Контакт</span>
+                        <input type="text" id="orderContact" required>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <span class="label" id="lbl_order_task">Техническое задание</span>
+                    <textarea id="orderTask" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn" id="btn_order">Отправить ТЗ</button>
+            </form>
+        </section>
+
+        <section class="section-box danger">
+            <h2 class="danger" id="title_market">⚡ МАРКЕТПЛЕЙС ПРОЕКТОВ</h2>
+            <form id="formMarket">
+                <div class="field-group">
+                    <div>
+                        <span class="label" id="lbl_market_name">Название проекта</span>
+                        <input type="text" id="projName" required>
+                    </div>
+                    <div>
+                        <span class="label" id="lbl_market_price">Цена</span>
+                        <input type="text" id="projPrice" required>
+                    </div>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <span class="label" id="lbl_market_desc">Описание проекта</span>
+                    <textarea id="projDesc" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn danger" id="btn_market">ВЫСТАВИТЬ НА ПРОДАЖУ</button>
+            </form>
+        </section>
+
+        <div class="logs" id="logBox">> System Online...</div>
+    </div>
+
+    <script>
+        const WEBHOOK = "https://discord.com/api/webhooks/1500937786633748520/FlaEC-WspDOkS9MT9Pfji9CBDhN688dybAvRM5W1Im6eJ7ByJsX0S7ZfJ4w96sGfoaNB";
+
+        const translations = {
+            ru: {
+                title_seller: "[01] Я ПРОДАЮ УСЛУГИ", lbl_seller_contact: "Ваш контакт", lbl_seller_role: "Специализация", lbl_seller_exp: "Опыт и навыки", btn_seller: "Разместить резюме",
+                title_order: "[02] ЗАКАЗАТЬ УСЛУГУ", lbl_order_budget: "Бюджет (R$)", lbl_order_contact: "Контакт", lbl_order_task: "Техническое задание", btn_order: "Отправить ТЗ",
+                title_market: "⚡ МАРКЕТПЛЕЙС ПРОЕКТОВ", lbl_market_name: "Название проекта", lbl_market_price: "Цена", lbl_market_desc: "Описание проекта", btn_market: "ВЫСТАВИТЬ НА ПРОДАЖУ",
+                opt_scripter: "Скриптер", opt_builder: "Билдер", opt_ui: "UI Дизайнер", opt_modeler: "Моделлер", log_ok: "Сигнал отправлен"
+            },
+            en: {
+                title_seller: "[01] I SELL SERVICES", lbl_seller_contact: "Your Contact", lbl_seller_role: "Specialization", lbl_seller_exp: "Experience & Skills", btn_seller: "Post Resume",
+                title_order: "[02] ORDER SERVICE", lbl_order_budget: "Budget (R$)", lbl_order_contact: "Contact", lbl_order_task: "Task Description", btn_order: "Send Request",
+                title_market: "⚡ PROJECT MARKETPLACE", lbl_market_name: "Project Name", lbl_market_price: "Price", lbl_market_desc: "Project Description", btn_market: "LIST FOR SALE",
+                opt_scripter: "Scripter", opt_builder: "Builder", opt_ui: "UI Designer", opt_modeler: "Modeler", log_ok: "Signal sent"
+            },
+            fr: {
+                title_seller: "[01] JE VENDS DES SERVICES", lbl_seller_contact: "Votre Contact", lbl_seller_role: "Spécialisation", lbl_seller_exp: "Expérience et Compétences", btn_seller: "Publier le CV",
+                title_order: "[02] COMMANDER UN SERVICE", lbl_order_budget: "Budget (R$)", lbl_order_contact: "Contact", lbl_order_task: "Description de la tâche", btn_order: "Envoyer la demande",
+                title_market: "⚡ MARCHÉ DES PROJETS", lbl_market_name: "Nom du projet", lbl_market_price: "Prix", lbl_market_desc: "Description du projet", btn_market: "METTRE EN VENTE",
+                opt_scripter: "Scripteur", opt_builder: "Constructeur", opt_ui: "Designer UI", opt_modeler: "Modélisateur", log_ok: "Signal envoyé"
+            },
+            es: {
+                title_seller: "[01] VENDO SERVICIOS", lbl_seller_contact: "Tu Contacto", lbl_seller_role: "Especialización", lbl_seller_exp: "Experiencia y Habilidades", btn_seller: "Publicar CV",
+                title_order: "[02] PEDIR SERVICIO", lbl_order_budget: "Presupuesto (R$)", lbl_order_contact: "Contacto", lbl_order_task: "Descripción de la tarea", btn_order: "Enviar Solicitud",
+                title_market: "⚡ MERCADO DE PROYECTOS", lbl_market_name: "Nombre del Proyecto", lbl_market_price: "Precio", lbl_market_desc: "Descripción del proyecto", btn_market: "PONER A LA VENTA",
+                opt_scripter: "Programador", opt_builder: "Constructor", opt_ui: "Diseñador UI", opt_modeler: "Modelador", log_ok: "Señal enviada"
+            },
+            it: {
+                title_seller: "[01] VENDO SERVIZI", lbl_seller_contact: "Tuo Contatto", lbl_seller_role: "Specializzazione", lbl_seller_exp: "Esperienza e Competenze", btn_seller: "Pubblica CV",
+                title_order: "[02] ORDINA SERVIZIO", lbl_order_budget: "Budget (R$)", lbl_order_contact: "Contatto", lbl_order_task: "Descrizione del compito", btn_order: "Invia Richiesta",
+                title_market: "⚡ MERCATO DEI PROGETTI", lbl_market_name: "Nome Progetto", lbl_market_price: "Prezzo", lbl_market_desc: "Descrizione del progetto", btn_market: "METTI IN VENDITA",
+                opt_scripter: "Scripter", opt_builder: "Costruttore", opt_ui: "UI Designer", opt_modeler: "Modellatore", log_ok: "Segnale inviato"
+            },
+            zh: {
+                title_seller: "[01] 我提供服务", lbl_seller_contact: "联系方式", lbl_seller_role: "专业领域", lbl_seller_exp: "经验与技能", btn_seller: "发布简历",
+                title_order: "[02] 订购服务", lbl_order_budget: "预算 (R$)", lbl_order_contact: "联系人", lbl_order_task: "任务说明", btn_order: "发送请求",
+                title_market: "⚡ 项目市场", lbl_market_name: "项目名称", lbl_market_price: "价格", lbl_market_desc: "项目描述", btn_market: "上架出售",
+                opt_scripter: "程序员", opt_builder: "搭建师", opt_ui: "UI设计师", opt_modeler: "建模师", log_ok: "信号已发送"
+            }
+        };
+
+        function changeLang(lang) {
+            const t = translations[lang];
+            for (let id in t) {
+                const el = document.getElementById(id);
+                if (el) el.innerText = t[id];
+            }
+        }
+
+        // Matrix
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+        function res() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = res; res();
+        const drops = Array(Math.floor(canvas.width/10)).fill(1);
+        function draw() {
+            ctx.fillStyle = "rgba(0,0,0,0.05)"; ctx.fillRect(0,0,canvas.width,canvas.height);
+            ctx.fillStyle = "#00ffa3"; ctx.font = "10px monospace";
+            drops.forEach((y, i) => {
+                ctx.fillText(String.fromCharCode(Math.random()*128), i*10, y*10);
+                if(y*10 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            });
+        }
+        setInterval(draw, 50);
+        setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+
+        async function send(payload) {
+            try {
+                const res = await fetch(WEBHOOK, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
+                });
+                if(res.ok) {
+                    const currentLang = document.querySelector('.lang-select').value;
+                    alert(translations[currentLang].log_ok);
+                    return true;
+                }
+            } catch(e) { console.error(e); }
+            return false;
+        }
+
+        document.getElementById('formSeller').onsubmit = async (e) => {
+            e.preventDefault();
+            await send({embeds: [{title: "🙋‍♂️ RESUME", color: 65443, fields: [
+                {name: "Role", value: document.getElementById('sellerRole').value},
+                {name: "Contact", value: document.getElementById('sellerContact').value},
+                {name: "Info", value: document.getElementById('sellerText').value}
+            ]}]});
+            e.target.reset();
+        };
+
+        document.getElementById('formOrder').onsubmit = async (e) => {
+            e.preventDefault();
+            await send({embeds: [{title: "🛒 NEW ORDER", color: 3447003, fields: [
+                {name: "Budget", value: document.getElementById('orderPrice').value + " R$"},
+                {name: "Contact", value: document.getElementById('orderContact').value},
+                {name: "Task", value: document.getElementById('orderTask').value}
+            ]}]});
+            e.target.reset();
+        };
+
+        document.getElementById('formMarket').onsubmit = async (e) => {
+            e.preventDefault();
+            await send({embeds: [{title: "🔥 FOR SALE", color: 16711765, fields: [
+                {name: "Project", value: document.getElementById('projName').value},
+                {name: "Price", value: document.getElementById('projPrice').value},
+                {name: "Desc", value: document.getElementById('projDesc').value}
+            ]}]});
+            e.target.reset();
+        };
+    </script>
+</body>
+</html>
